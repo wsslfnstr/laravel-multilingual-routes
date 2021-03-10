@@ -15,10 +15,10 @@ class DetectRequestLocale
      */
     public function handle($request, Closure $next)
     {
-        $segment = $request->locale ?: $request->segment(1);
+        $locale = strtok(request()->getHost(),'.');
 
-        if (in_array($segment, locales())) {
-            app()->setLocale($segment);
+        if (in_array($locale, locales())) {
+            app()->setLocale($locale);
         }
 
         return $next($request);

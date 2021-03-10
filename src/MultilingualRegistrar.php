@@ -67,7 +67,7 @@ class MultilingualRegistrar
         $this->applyConstraints($route, $locale, $options);
 
         if ($prefix = $this->generatePrefixForLocale($key, $locale)) {
-            $route->setUri("{$prefix}/{$route->uri}");
+            $route->setUri("{$route->uri}");
         }
 
         if ($middleware = Arr::get($options, 'middleware')) {
@@ -99,6 +99,9 @@ class MultilingualRegistrar
      */
     protected function generateRoute(string $key, $handle, string $locale, array $options): Route
     {
+        $domain = config('laravel-multilingual-routes.prefix_default') ? $locale.'.'.env('APP_URL') :
+            (config('app.locale') == $locale ? env('APP_URL') : $locale.'.'.env('APP_URL'));
+
         $route = $this->router->addRoute(
             $this->getRequestMethodFromOptions($options),
             $this->applyUniqueRegistrationKey(
@@ -106,7 +109,7 @@ class MultilingualRegistrar
                 $locale
             ),
             $handle ?: '\ChinLeung\MultilingualRoutes\Controllers\ViewController'
-        );
+        )->domain($domain);
 
         if ($handle === null) {
             return $route
